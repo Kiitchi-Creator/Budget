@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="fr" style="background-color: #05070f;">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Budget - Kiitchi Creator</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;800;900&family=Rajdhani:wght@500;600;700&display=swap');
+
+    :root {
+      --color-income: #00ff9d;
+      --color-expense: #ff0055;
+      --color-accent: #00f0ff; /* Cyan Avatar */
+      --color-credit: #b026ff; /* Violet Avatar */
+      --color-bg: #05070f;
+    }
+
+    html, body {
+      background-color: var(--color-bg);
+      color: #e2e8f0;
+      min-height: 100vh;
+    }
+
+    body {
+      font-family: 'Rajdhani', sans-serif;
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      background-attachment: fixed;
+    }
+
+    .font-tech {
+      font-family: 'Orbitron', sans-serif;
+    }
+
+    .glow-gold {
+      box-shadow: 0 0 20px rgba(0, 240, 255, 0.15), inset 0 0 15px rgba(176, 38, 255, 0.05);
+      border-color: rgba(0, 240, 255, 0.3);
+    }
+
+    .glow-card {
+      background: rgba(13, 18, 36, 0.85);
+      backdrop-filter: blur(14px);
+      border: 1px solid rgba(0, 240, 255, 0.15);
+      box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
+    }
+
+    .cyber-btn {
+      background: linear-gradient(135deg, rgba(0, 240, 255, 0.2) 0%, rgba(176, 38, 255, 0.2) 100%);
+      border: 1px solid var(--color-accent);
+      transition: all 0.3s ease;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .cyber-btn:hover {
+      box-shadow: 0 0 18px var(--color-accent);
+    }
+
+    .tab-btn.active {
+      color: var(--color-accent);
+      border-bottom: 2px solid var(--color-accent);
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    .type-income {
+      color: var(--color-income);
+      text-shadow: 0 0 8px var(--color-income);
+    }
+
+    .type-expense {
+      color: var(--color-expense);
+      text-shadow: 0 0 8px var(--color-expense);
+    }
+
+    .text-accent {
+      color: var(--color-accent);
+    }
+
+    .text-credit {
+      color: var(--color-credit);
+    }
+
+    ::-webkit-scrollbar {
+      width: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #05070f;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: var(--color-accent);
+      border-radius: 3px;
+    }
+  </style>
+</head>
+<body class="pb-12">
+
+  <!-- Header -->
+  <header class="border-b border-slate-800 bg-slate-950/85 backdrop-blur-md sticky top-0 z-40">
+    <div class="max-w-4xl mx-auto px-4 py-3 flex items-center justify-between">
+      <div class="flex items-center space-x-3">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-cyan-500 to-purple-600 flex items-center justify-center shadow-lg shadow-cyan-500/20 border border-cyan-300/30">
+          <i data-lucide="wallet" class="w-6 h-6 text-black"></i>
+        </div>
+        <div>
+          <h1 class="text-2xl font-black font-tech tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-teal-300 to-purple-400">
+            BUDGET
+          </h1>
+          <p class="text-[10px] text-cyan-400/60 font-tech">KIITCHI SYSTEM</p>
+        </div>
+      </div>
+
+      <!-- Actions : Palette + Export/Import -->
+      <div class="flex items-center space-x-2">
+        <button onclick="toggleThemeModal(true)" title="Personnaliser les couleurs & fond" class="p-2 rounded-lg border border-slate-700 bg-slate-900 text-slate-300 hover:text-cyan-400 hover:border-cyan-400 transition">
+          <i data-lucide="palette" class="w-5 h-5"></i>
+        </button>
+        <button onclick="exportData()" title="Exporter les données" class="p-2 rounded-lg border border-cyan-500/30 bg-cyan-950/30 text-cyan-400 hover:bg-cyan-500/20 transition">
+          <i data-lucide="download" class="w-5 h-5"></i>
+        </button>
+        <label title="Importer les données" class="p-2 rounded-lg border border-purple-500/30 bg-purple-950/30 text-purple-400 hover:bg-purple-500/20 transition cursor-pointer">
+          <i data-lucide="upload" class="w-5 h-5"></i>
+          <input type="file" id="importFile" onchange="importData(event)" class="hidden" accept=".json">
+        </label>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-4xl mx-auto px-4 mt-6 space-y-6">
+
+    <!-- SOLDE GLOBAL -->
+    <div class="glow-card glow-gold rounded-2xl p-6 relative overflow-hidden">
+      <div class="flex items-center justify-between">
+        <div>
+          <p class="text-xs font-tech uppercase tracking-widest mb-1 flex items-center gap-1.5 opacity-90 text-slate-300">
+            <i data-lucide="shield-check" class="w-4 h-4 text-cyan-400"></i>
+            Solde Général
+          </p>
+          <p id="globalBalance" class="text-4xl sm:text-5xl font-extrabold font-tech type-income">0.00 €</p>
+        </div>
+        <div class="hidden sm:block opacity-20 text-cyan-400">
+          <i data-lucide="coins" class="w-20 h-20"></i>
+        </div>
+      </div>
+    </div>
+
+    <!-- ONGLETS NAVIGATION PRINCIPALE -->
+    <div class="flex border-b border-slate-800 font-tech text-sm">
+      <button onclick="switchTab('transactions')" id="tab-transactions" class="tab-btn active flex-1 py-3 px-4 text-center font-bold text-slate-400 hover:text-slate-200 transition flex items-center justify-center gap-2">
+        <i data-lucide="list" class="w-4 h-4"></i>
+        <span>Transactions</span>
+      </button>
+      <button onclick="switchTab('subscriptions')" id="tab-subscriptions" class="tab-btn flex-1 py-3 px-4 text-center font-bold text-slate-400 hover:text-slate-200 transition flex items-center justify-center gap-2">
+        <i data-lucide="repeat" class="w-4 h-4"></i>
+        <span>Charges Fixes</span>
+      </button>
+    </div>
+
+    <!-- SECTION 1 : TRANSACTIONS -->
+    <div id="section-transactions" class="space-y-6">
+
+      <!-- Formulaire d'ajout -->
+      <div class="glow-card rounded-2xl p-6">
+        <h2 class="text-md font-tech text-accent font-bold mb-4 flex items-center gap-2">
+          <i data-lucide="plus-circle" class="w-5 h-5"></i>
+          <span id="formTitle">Ajouter une Opération</span>
+        </h2>
+
+        <form id="transForm" onsubmit="addTransaction(event)" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <input type="hidden" id="editTransId" value="">
+
+          <div>
+            <label class="block text-xs font-tech text-slate-400 mb-1">Date</label>
+            <input type="date" id="transDate" required
+              class="w-full bg-slate-950/80 border border-slate-700 rounded-xl px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-cyan-400 transition">
+          </div>
+
+          <div>
+            <label class="block text-xs font-tech text-slate-400 mb-1">Libellé</label>
+            <input type="text" id="label" required placeholder="Ex: Courses, Salaire, Netflix..."
+              class="w-full bg-slate-950/80 border border-slate-700 rounded-xl px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-cyan-400 transition">
+          </div>
+
+          <div>
+            <label class="block text-xs font-tech text-slate-400 mb-1">Montant (€)</label>
+            <input type="number" step="0.01" id="amount" required placeholder="0.00"
+              class="w-full bg-slate-950/80 border border-slate-700 rounded-xl px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-cyan-400 transition">
+          </div>
+
+          <div>
+            <label class="block text-xs font-tech text-slate-400 mb-1">Type d'opération</label>
+            <select id="type" onchange="updateTagOptions()" 
+              class="w-full bg-slate-950/80 border border-slate-700 rounded-xl px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-cyan-400 transition">
+              <option value="expense">Sortie (Dépense)</option>
+              <option value="income">Entrée (Revenu)</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="block text-xs font-tech text-slate-400 mb-1">Catégorie</label>
+            <select id="tag" 
+              class="w-full bg-slate-950/80 border border-slate-700 rounded-xl px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-cyan-400 transition">
+              <option value="standard">Courante / Ponctuelle</option>
+              <option value="sub">Abonnement (Fixe)</option>
+              <option value="install">Paiement plusieurs fois (Crédit)</option>
+            </select>
+          </div>
+
+          <div class="sm:col-span-2 lg:col-span-1 flex items-center pt-5">
+            <label class="flex items-center space-x-2 text-sm text-slate-300 cursor-pointer select-none">
+              <input type="checkbox" id="isRecurring" class="w-4 h-4 rounded accent-cyan-400">
+              <span>Répéter chaque mois</span>
+            </label>
+          </div>
+
+          <div class="sm:col-span-2 lg:col-span-3 flex gap-2">
+            <button type="submit" id="submitBtn" class="w-full cyber-btn text-accent font-tech font-bold py-2.5 rounded-xl flex items-center justify-center gap-2">
+              <i data-lucide="check" class="w-4 h-4"></i>
+              Valider l'opération
+            </button>
+            <button type="button" id="cancelEditBtn" onclick="cancelEdit()" class="hidden px-4 py-2.5 rounded-xl border border-slate-700 text-slate-400 hover:text-slate-200 font-tech">
+              Annuler
+            </button>
+          </div>
+
+        </form>
+      </div>
+
+      <!-- Navigation Mois & Résumé du mois -->
+      <div class="glow-card p-4 rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-4">
+        
+        <div class="flex items-center space-x-2 w-full sm:w-auto justify-between">
+          <button onclick="changeMonth(-1)" class="p-2 rounded-lg bg-slate-900 border border-slate-700 text-accent hover:border-cyan-400">
+            <i data-lucide="chevron-left" class="w-5 h-5"></i>
+          </button>
+          <span id="currentMonthLabel" class="font-tech text-lg text-slate-200 font-bold px-4">Mois</span>
+          <button onclick="changeMonth(1)" class="p-2 rounded-lg bg-slate-900 border border-slate-700 text-accent hover:border-cyan-400">
+            <i data-lucide="chevron-right" class="w-5 h-5"></i>
+          </button>
+        </div>
+
+        <div class="flex items-center space-x-6 text-sm font-tech">
+          <div>
+            <span class="text-xs text-slate-400">Entrées : </span>
+            <span id="monthIncomes" class="type-income font-bold">+0.00 €</span>
+          </div>
+          <div>
+            <span class="text-xs text-slate-400">Sorties : </span>
+            <span id="monthExpenses" class="type-expense font-bold">-0.00 €</span>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Historique du mois -->
+      <div class="glow-card rounded-2xl p-6 border-slate-800">
+        <h3 class="text-md font-tech text-slate-300 font-bold mb-4">Fil des Transactions</h3>
+        <div id="transactionsList" class="space-y-3"></div>
+      </div>
+
+    </div>
+
+    <!-- SECTION 2 : ABONNEMENTS ET CRÉDITS -->
+    <div id="section-subscriptions" class="space-y-6 hidden">
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div class="glow-card rounded-2xl p-5 border-cyan-500/30">
+          <p class="text-xs font-tech text-accent uppercase tracking-widest mb-1">Total Abonnements / Mois</p>
+          <p id="totalSubsMonthly" class="text-3xl font-extrabold font-tech text-accent">0.00 €</p>
+        </div>
+        <div class="glow-card rounded-2xl p-5 border-purple-500/30">
+          <p class="text-xs font-tech text-credit uppercase tracking-widest mb-1">Total Crédits / Mois</p>
+          <p id="totalCreditsMonthly" class="text-3xl font-extrabold font-tech text-credit">0.00 €</p>
+        </div>
+      </div>
+
+      <div class="glow-card rounded-2xl p-6 border-slate-800">
+        <h3 class="text-md font-tech text-slate-300 font-bold mb-4 flex items-center gap-2">
+          <i data-lucide="refresh-cw" class="w-4 h-4 text-accent"></i>
+          Charges Fixes Automatiques
+        </h3>
+        <div id="recurringList" class="space-y-3"></div>
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- MODALE PERSONNALISATION (THÈME & FOND) -->
+  <div id="themeModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
+    <div class="glow-card rounded-2xl p-6 max-w-lg w-full border-slate-700 relative max-h-[90vh] overflow-y-auto">
+      <button onclick="toggleThemeModal(false)" class="absolute top-4 right-4 text-slate-400 hover:text-slate-100">
+        <i data-lucide="x" class="w-6 h-6"></i>
+      </button>
+
+      <h3 class="text-lg font-tech text-accent font-bold mb-1 flex items-center gap-2">
+        <i data-lucide="palette" class="w-5 h-5"></i>
+        Personnalisation Visuelle
+      </h3>
+      <p class="text-xs text-slate-400 mb-6">Ajuste les couleurs et l'image de fond de ton application.</p>
+
+      <!-- Palette des Couleurs -->
+      <div class="space-y-4">
+        <div class="flex items-center justify-between p-3 rounded-xl bg-slate-900/80 border border-slate-800">
+          <span class="font-bold text-sm text-slate-200">Entrées (Revenus & Solde positif)</span>
+          <input type="color" id="pickerIncome" onchange="updateTheme()" class="w-9 h-9 rounded cursor-pointer bg-transparent border-0">
+        </div>
+
+        <div class="flex items-center justify-between p-3 rounded-xl bg-slate-900/80 border border-slate-800">
+          <span class="font-bold text-sm text-slate-200">Sorties (Dépenses & Solde négatif)</span>
+          <input type="color" id="pickerExpense" onchange="updateTheme()" class="w-9 h-9 rounded cursor-pointer bg-transparent border-0">
+        </div>
+
+        <div class="flex items-center justify-between p-3 rounded-xl bg-slate-900/80 border border-slate-800">
+          <span class="font-bold text-sm text-slate-200">Abonnements & Éléments clefs (Cyan)</span>
+          <input type="color" id="pickerAccent" onchange="updateTheme()" class="w-9 h-9 rounded cursor-pointer bg-transparent border-0">
+        </div>
+
+        <div class="flex items-center justify-between p-3 rounded-xl bg-slate-900/80 border border-slate-800">
+          <span class="font-bold text-sm text-slate-200">Crédits (Violet / Magenta)</span>
+          <input type="color" id="pickerCredit" onchange="updateTheme()" class="w-9 h-9 rounded cursor-pointer bg-transparent border-0">
+        </div>
+
+        <div class="flex items-center justify-between p-3 rounded-xl bg-slate-900/80 border border-slate-800">
+          <span class="font-bold text-sm text-slate-200">Couleur du Fond</span>
+          <input type="color" id="pickerBg" onchange="updateTheme()" class="w-9 h-9 rounded cursor-pointer bg-transparent border-0">
+        </div>
+      </div>
+
+      <!-- Image de fond sur-mesure -->
+      <div class="mt-6 pt-4 border-t border-slate-800">
+        <label class="block text-sm font-bold text-slate-200 mb-2">Image de Fond Personnalisée</label>
+        <div class="flex items-center gap-2">
+          <label class="flex-1 py-2 px-3 rounded-xl border border-slate-700 bg-slate-900 text-xs text-slate-300 hover:border-cyan-400 cursor-pointer text-center">
+            Choisir une image...
+            <input type="file" id="bgImageInput" onchange="handleBgImageUpload(event)" accept="image/*" class="hidden">
+          </label>
+          <button onclick="removeBgImage()" title="Supprimer l'image" class="p-2 rounded-xl border border-pink-500/30 text-pink-400 hover:bg-pink-950/30">
+            <i data-lucide="trash-2" class="w-4 h-4"></i>
+          </button>
+        </div>
+      </div>
+
+      <div class="mt-6 pt-4 border-t border-slate-800 flex justify-between">
+        <button onclick="resetTheme()" class="text-xs text-slate-500 hover:text-slate-300">Réinitialiser le thème</button>
+        <button onclick="toggleThemeModal(false)" class="cyber-btn text-xs font-tech text-accent px-4 py-2 rounded-xl">Fermer</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer Signature avec le mini robot -->
+  <footer class="mt-12 text-center py-4 border-t border-slate-900 flex items-center justify-center gap-2">
+    <!-- Mini Robot SVG Badge -->
+    <div class="w-6 h-6 rounded-lg bg-gradient-to-tr from-cyan-500 to-purple-600 flex items-center justify-center shadow-md shadow-cyan-500/20 border border-cyan-300/30">
+      <i data-lucide="bot" class="w-3.5 h-3.5 text-black"></i>
+    </div>
+    <p class="text-xs font-tech tracking-widest text-slate-400 uppercase">
+      Réalisé par <span class="text-accent font-bold">Kiitchi Creator</span>
+    </p>
+  </footer>
+
+  <script>
+    const defaultTheme = {
+      income: '#00ff9d',
+      expense: '#ff0055',
+      accent: '#00f0ff', // Cyan Avatar
+      credit: '#b026ff', // Violet Avatar
+      bg: '#05070f',
+      bgImage: null
+    };
+
+    let theme = { ...defaultTheme };
+    let state = { transactions: [], recurringRules: [] };
+    let currentDate = new Date();
+
+    function loadTheme() {
+      const savedTheme = localStorage.getItem('kiitchi_budget_theme');
+      if (savedTheme) {
+        try { theme = JSON.parse(savedTheme); } catch (e) {}
+      }
+
+      document.getElementById('pickerIncome').value = theme.income;
+      document.getElementById('pickerExpense').value = theme.expense;
+      document.getElementById('pickerAccent').value = theme.accent;
+      document.getElementById('pickerCredit').value = theme.credit || defaultTheme.credit;
+      document.getElementById('pickerBg').value = theme.bg || defaultTheme.bg;
+
+      applyTheme();
+    }
+
+    function updateTheme() {
+      theme.income = document.getElementById('pickerIncome').value;
+      theme.expense = document.getElementById('pickerExpense').value;
+      theme.accent = document.getElementById('pickerAccent').value;
+      theme.credit = document.getElementById('pickerCredit').value;
+      theme.bg = document.getElementById('pickerBg').value;
+
+      saveTheme();
+    }
+
+    function saveTheme() {
+      localStorage.setItem('kiitchi_budget_theme', JSON.stringify(theme));
+      applyTheme();
+    }
+
+    function applyTheme() {
+      document.documentElement.style.setProperty('--color-income', theme.income);
+      document.documentElement.style.setProperty('--color-expense', theme.expense);
+      document.documentElement.style.setProperty('--color-accent', theme.accent);
+      document.documentElement.style.setProperty('--color-credit', theme.credit);
+      document.documentElement.style.setProperty('--color-bg', theme.bg);
+
+      if (theme.bgImage) {
+        document.body.style.backgroundImage = `linear-gradient(rgba(5, 7, 15, 0.75), rgba(5, 7, 15, 0.75)), url(${theme.bgImage})`;
+      } else {
+        document.body.style.backgroundImage = `
+          radial-gradient(circle at 15% 15%, rgba(0, 240, 255, 0.05) 0%, transparent 45%),
+          radial-gradient(circle at 85% 85%, rgba(176, 38, 255, 0.05) 0%, transparent 45%)`;
+      }
+    }
+
+    function handleBgImageUpload(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        theme.bgImage = e.target.result;
+        saveTheme();
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function removeBgImage() {
+      theme.bgImage = null;
+      saveTheme();
+    }
+
+    function resetTheme() {
+      theme = { ...defaultTheme };
+      saveTheme();
+      loadTheme();
+    }
+
+    function toggleThemeModal(show) {
+      document.getElementById('themeModal').classList.toggle('hidden', !show);
+    }
+
+    function loadData() {
+      const saved = localStorage.getItem('kiitchi_budget_data');
+      if (saved) {
+        try { state = JSON.parse(saved); } catch (e) {}
+      }
+      
+      document.getElementById('transDate').value = new Date().toISOString().slice(0, 10);
+      loadTheme();
+      checkAndApplyRecurring();
+      renderApp();
+    }
+
+    function saveData() {
+      localStorage.setItem('kiitchi_budget_data', JSON.stringify(state));
+      renderApp();
+    }
+
+    function switchTab(tab) {
+      document.getElementById('section-transactions').classList.toggle('hidden', tab !== 'transactions');
+      document.getElementById('section-subscriptions').classList.toggle('hidden', tab !== 'subscriptions');
+      
+      document.getElementById('tab-transactions').classList.toggle('active', tab === 'transactions');
+      document.getElementById('tab-subscriptions').classList.toggle('active', tab === 'subscriptions');
+    }
+
+    function changeMonth(delta) {
+      currentDate.setMonth(currentDate.getMonth() + delta);
+      renderApp();
+    }
+
+    function getSelectedMonthKey() {
+      return currentDate.toISOString().slice(0, 7);
+    }
+
+    function checkAndApplyRecurring() {
+      const monthKey = getSelectedMonthKey();
+      if (!state.recurringRules || state.recurringRules.length === 0) return;
+
+      let applied = false;
+      state.recurringRules.forEach(rule => {
+        const exists = state.transactions.some(t => t.recurringId === rule.id && t.date.startsWith(monthKey));
+        if (!exists) {
+          state.transactions.push({
+            id: Date.now() + Math.random(),
+            recurringId: rule.id,
+            label: rule.label,
+            amount: rule.amount,
+            type: rule.type,
+            tag: rule.tag,
+            date: `${monthKey}-01`
+          });
+          applied = true;
+        }
+      });
+
+      if (applied) saveData();
+    }
+
+    function updateTagOptions() {
+      const type = document.getElementById('type').value;
+      const tagSelect = document.getElementById('tag');
+      tagSelect.disabled = (type === 'income');
+    }
+
+    function addTransaction(e) {
+      e.preventDefault();
+      
+      const editId = document.getElementById('editTransId').value;
+      const date = document.getElementById('transDate').value;
+      const label = document.getElementById('label').value.trim();
+      const amount = parseFloat(document.getElementById('amount').value);
+      const type = document.getElementById('type').value;
+      const tag = type === 'income' ? 'income' : document.getElementById('tag').value;
+      const isRecurring = document.getElementById('isRecurring').checked;
+
+      if (!label || isNaN(amount) || amount <= 0 || !date) return;
+
+      if (editId) {
+        const index = state.transactions.findIndex(t => t.id == editId);
+        if (index !== -1) {
+          state.transactions[index].date = date;
+          state.transactions[index].label = label;
+          state.transactions[index].amount = amount;
+          state.transactions[index].type = type;
+          state.transactions[index].tag = tag;
+        }
+        cancelEdit();
+      } else {
+        const newTrans = { id: Date.now(), date, label, amount, type, tag };
+
+        if (isRecurring) {
+          const ruleId = 'rec_' + Date.now();
+          newTrans.recurringId = ruleId;
+          state.recurringRules.push({ id: ruleId, label, amount, type, tag });
+        }
+
+        state.transactions.push(newTrans);
+      }
+
+      document.getElementById('transForm').reset();
+      document.getElementById('transDate').value = new Date().toISOString().slice(0, 10);
+      updateTagOptions();
+      
+      saveData();
+    }
+
+    function editTransaction(id) {
+      const trans = state.transactions.find(t => t.id == id);
+      if (!trans) return;
+
+      document.getElementById('editTransId').value = trans.id;
+      document.getElementById('transDate').value = trans.date;
+      document.getElementById('label').value = trans.label;
+      document.getElementById('amount').value = trans.amount;
+      document.getElementById('type').value = trans.type;
+      updateTagOptions();
+      if (trans.type !== 'income') document.getElementById('tag').value = trans.tag;
+
+      document.getElementById('formTitle').textContent = 'Modifier la Transaction';
+      document.getElementById('cancelEditBtn').classList.remove('hidden');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function cancelEdit() {
+      document.getElementById('editTransId').value = '';
+      document.getElementById('transForm').reset();
+      document.getElementById('transDate').value = new Date().toISOString().slice(0, 10);
+      document.getElementById('formTitle').textContent = 'Ajouter une Opération';
+      document.getElementById('cancelEditBtn').classList.add('hidden');
+      updateTagOptions();
+    }
+
+    function deleteTransaction(id) {
+      state.transactions = state.transactions.filter(t => t.id !== id);
+      saveData();
+    }
+
+    function deleteRecurringRule(recId) {
+      if (confirm("Supprimer cette règle récurrente pour les mois futurs ?")) {
+        state.recurringRules = state.recurringRules.filter(r => r.id !== recId);
+        saveData();
+      }
+    }
+
+    function renderApp() {
+      const monthKey = getSelectedMonthKey();
+      checkAndApplyRecurring();
+
+      const options = { month: 'long', year: 'numeric' };
+      document.getElementById('currentMonthLabel').textContent = currentDate.toLocaleDateString('fr-FR', options);
+
+      let globalVal = 0;
+      state.transactions.forEach(t => {
+        globalVal += (t.type === 'income' ? t.amount : -t.amount);
+      });
+      const globalEl = document.getElementById('globalBalance');
+      globalEl.textContent = (globalVal >= 0 ? '+' : '') + globalVal.toFixed(2) + ' €';
+      globalEl.className = 'text-4xl sm:text-5xl font-extrabold font-tech ' + (globalVal >= 0 ? 'type-income' : 'type-expense');
+
+      const monthTrans = state.transactions.filter(t => t.date.startsWith(monthKey));
+      let incMonth = 0, expMonth = 0;
+
+      const listContainer = document.getElementById('transactionsList');
+      listContainer.innerHTML = '';
+
+      if (monthTrans.length === 0) {
+        listContainer.innerHTML = `<div class="text-center py-6 text-slate-500 font-tech">Aucune opération pour ce mois.</div>`;
+      } else {
+        monthTrans.sort((a,b) => new Date(b.date) - new Date(a.date)).forEach(t => {
+          if (t.type === 'income') incMonth += t.amount;
+          else expMonth += t.amount;
+
+          let badge = '';
+          if (t.tag === 'sub') badge = `<span class="text-xs px-2 py-0.5 rounded bg-slate-950 border border-slate-700 text-accent">Abonnement</span>`;
+          else if (t.tag === 'install') badge = `<span class="text-xs px-2 py-0.5 rounded bg-slate-950 border border-slate-700 text-credit">Crédit</span>`;
+
+          const item = document.createElement('div');
+          item.className = 'flex items-center justify-between p-3.5 rounded-xl bg-slate-900/60 border border-slate-800 hover:border-slate-700 transition cursor-pointer';
+          item.innerHTML = `
+            <div class="flex items-center space-x-3" onclick="editTransaction(${t.id})">
+              <div class="p-2 rounded-lg bg-slate-950 border border-slate-800">
+                <i data-lucide="${t.type === 'income' ? 'arrow-up-right' : 'arrow-down-right'}" class="w-4 h-4 ${t.type === 'income' ? 'type-income' : 'type-expense'}"></i>
+              </div>
+              <div>
+                <div class="flex items-center space-x-2">
+                  <span class="font-bold text-slate-100">${escapeHtml(t.label)}</span>
+                  ${badge}
+                </div>
+                <span class="text-xs text-slate-500 font-tech">${t.date}</span>
+              </div>
+            </div>
+            <div class="flex items-center space-x-3">
+              <span class="font-tech font-bold ${t.type === 'income' ? 'type-income' : 'type-expense'}">
+                ${t.type === 'income' ? '+' : '-'}${t.amount.toFixed(2)} €
+              </span>
+              <button onclick="editTransaction(${t.id})" title="Modifier" class="text-slate-500 hover:text-cyan-400 p-1">
+                <i data-lucide="pencil" class="w-4 h-4"></i>
+              </button>
+              <button onclick="deleteTransaction(${t.id})" title="Supprimer" class="text-slate-500 hover:text-pink-500 p-1">
+                <i data-lucide="trash-2" class="w-4 h-4"></i>
+              </button>
+            </div>
+          `;
+          listContainer.appendChild(item);
+        });
+      }
+
+      document.getElementById('monthIncomes').textContent = '+' + incMonth.toFixed(2) + ' €';
+      document.getElementById('monthExpenses').textContent = '-' + expMonth.toFixed(2) + ' €';
+
+      let subTotal = 0, creditTotal = 0;
+      const recContainer = document.getElementById('recurringList');
+      recContainer.innerHTML = '';
+
+      if (state.recurringRules.length === 0) {
+        recContainer.innerHTML = `<div class="text-center py-6 text-slate-500 font-tech">Aucun abonnement ou crédit automatique configuré.</div>`;
+      } else {
+        state.recurringRules.forEach(r => {
+          if (r.tag === 'sub') subTotal += r.amount;
+          if (r.tag === 'install') creditTotal += r.amount;
+
+          const recItem = document.createElement('div');
+          recItem.className = 'flex items-center justify-between p-3.5 rounded-xl bg-slate-900/60 border border-slate-800';
+          recItem.innerHTML = `
+            <div>
+              <span class="font-bold text-slate-100">${escapeHtml(r.label)}</span>
+              <span class="ml-2 text-xs px-2 py-0.5 rounded ${r.tag === 'sub' ? 'text-accent border border-slate-700' : 'text-credit border border-slate-700'}">
+                ${r.tag === 'sub' ? 'Abonnement' : 'Crédit'}
+              </span>
+            </div>
+            <div class="flex items-center space-x-3">
+              <span class="font-tech font-bold text-slate-200">-${r.amount.toFixed(2)} € / mois</span>
+              <button onclick="deleteRecurringRule('${r.id}')" class="text-slate-600 hover:text-pink-500 p-1">
+                <i data-lucide="trash-2" class="w-4 h-4"></i>
+              </button>
+            </div>
+          `;
+          recContainer.appendChild(recItem);
+        });
+      }
+
+      document.getElementById('totalSubsMonthly').textContent = '-' + subTotal.toFixed(2) + ' €';
+      document.getElementById('totalCreditsMonthly').textContent = '-' + creditTotal.toFixed(2) + ' €';
+
+      lucide.createIcons();
+    }
+
+    function exportData() {
+      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(state, null, 2));
+      const downloadAnchor = document.createElement('a');
+      downloadAnchor.setAttribute("href", dataStr);
+      downloadAnchor.setAttribute("download", `budget_backup_${new Date().toISOString().slice(0,10)}.json`);
+      document.body.appendChild(downloadAnchor);
+      downloadAnchor.click();
+      downloadAnchor.remove();
+    }
+
+    function importData(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        try {
+          const imported = JSON.parse(e.target.result);
+          if (imported && Array.isArray(imported.transactions)) {
+            state = imported;
+            saveData();
+            alert("Données importées avec succès !");
+          }
+        } catch (err) {
+          alert("Erreur d'importation.");
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    function escapeHtml(str) {
+      return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      loadData();
+    });
+  </script>
+</body>
+</html>
