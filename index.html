@@ -1,13 +1,14 @@
 <!DOCTYPE html>
 <html lang="fr" style="background-color: #05070f;">
-<link rel="manifest" href="./manifest.json">
-  <head>
+<head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Budget - Kiitchi Creator</title>
+  <link rel="manifest" href="./manifest.json">
+
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Lucide Icons avec secours -->
+  <!-- Lucide Icons -->
   <script src="https://unpkg.com/lucide@0.344.0/dist/umd/lucide.min.js"></script>
 
   <style>
@@ -178,26 +179,22 @@
 
           <div>
             <label class="block text-xs font-tech text-slate-400 mb-1">Date</label>
-            <input type="date" id="transDate" required
-              class="w-full bg-slate-950/80 border border-slate-700 rounded-xl px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-cyan-400 transition">
+            <input type="date" id="transDate" required class="w-full bg-slate-950/80 border border-slate-700 rounded-xl px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-cyan-400 transition">
           </div>
 
           <div>
             <label class="block text-xs font-tech text-slate-400 mb-1">Libellé</label>
-            <input type="text" id="label" required placeholder="Ex: Courses, Salaire, Netflix..."
-              class="w-full bg-slate-950/80 border border-slate-700 rounded-xl px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-cyan-400 transition">
+            <input type="text" id="label" required placeholder="Ex: Courses, Salaire, Netflix..." class="w-full bg-slate-950/80 border border-slate-700 rounded-xl px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-cyan-400 transition">
           </div>
 
           <div>
             <label class="block text-xs font-tech text-slate-400 mb-1">Montant (€)</label>
-            <input type="number" step="0.01" id="amount" required placeholder="0.00"
-              class="w-full bg-slate-950/80 border border-slate-700 rounded-xl px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-cyan-400 transition">
+            <input type="number" step="0.01" id="amount" required placeholder="0.00" class="w-full bg-slate-950/80 border border-slate-700 rounded-xl px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-cyan-400 transition">
           </div>
 
           <div>
             <label class="block text-xs font-tech text-slate-400 mb-1">Type d'opération</label>
-            <select id="type" onchange="updateTagOptions()" 
-              class="w-full bg-slate-950/80 border border-slate-700 rounded-xl px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-cyan-400 transition">
+            <select id="type" onchange="updateTagOptions()" class="w-full bg-slate-950/80 border border-slate-700 rounded-xl px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-cyan-400 transition">
               <option value="expense">Sortie (Dépense)</option>
               <option value="income">Entrée (Revenu)</option>
             </select>
@@ -205,8 +202,7 @@
 
           <div>
             <label class="block text-xs font-tech text-slate-400 mb-1">Catégorie</label>
-            <select id="tag" 
-              class="w-full bg-slate-950/80 border border-slate-700 rounded-xl px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-cyan-400 transition">
+            <select id="tag" class="w-full bg-slate-950/80 border border-slate-700 rounded-xl px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-cyan-400 transition">
               <option value="standard">Courante / Ponctuelle</option>
               <option value="sub">Abonnement (Fixe)</option>
               <option value="install">Paiement plusieurs fois (Crédit)</option>
@@ -233,12 +229,10 @@
         </form>
       </div>
 
-      <!-- Navigation Mois & Résumé du mois -->
+      <!-- Navigation Mois & Résumé -->
       <div class="glow-card p-4 rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-4">
-        
         <div class="flex items-center space-x-2 w-full sm:w-auto justify-between">
-          <button onclick="changeMonth(-1)" class="p-2 rounded-lg bg-slate-900 border border-slate-700 text-accent hover:border-cyan-40
-700 text-accent hover:border-cyan-400">
+          <button onclick="changeMonth(-1)" class="p-2 rounded-lg bg-slate-900 border border-slate-700 text-accent hover:border-cyan-400">
             <i data-lucide="chevron-left" class="w-5 h-5"></i>
           </button>
           <span id="currentMonthLabel" class="font-tech text-lg text-slate-200 font-bold px-4">Mois</span>
@@ -257,10 +251,9 @@
             <span id="monthExpenses" class="type-expense font-bold">-0.00 €</span>
           </div>
         </div>
-
       </div>
 
-      <!-- Historique du mois -->
+      <!-- Historique des Transactions -->
       <div class="glow-card rounded-2xl p-6 border-slate-800">
         <h3 class="text-md font-tech text-slate-300 font-bold mb-4">Fil des Transactions</h3>
         <div id="transactionsList" class="space-y-3"></div>
@@ -268,7 +261,7 @@
 
     </div>
 
-    <!-- SECTION 2 : ABONNEMENTS ET CRÉDITS -->
+    <!-- SECTION 2 : CHARGES FIXES -->
     <div id="section-subscriptions" class="space-y-6 hidden">
 
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -294,7 +287,7 @@
 
   </main>
 
-  <!-- MODALE PERSONNALISATION (THÈME & FOND) -->
+  <!-- MODALE PERSONNALISATION THÈME -->
   <div id="themeModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
     <div class="glow-card rounded-2xl p-6 max-w-lg w-full border-slate-700 relative max-h-[90vh] overflow-y-auto">
       <button onclick="toggleThemeModal(false)" class="absolute top-4 right-4 text-slate-400 hover:text-slate-100">
@@ -307,7 +300,6 @@
       </h3>
       <p class="text-xs text-slate-400 mb-6">Ajuste les couleurs et l'image de fond de ton application.</p>
 
-      <!-- Palette des Couleurs -->
       <div class="space-y-4">
         <div class="flex items-center justify-between p-3 rounded-xl bg-slate-900/80 border border-slate-800">
           <span class="font-bold text-sm text-slate-200">Entrées (Revenus & Solde positif)</span>
@@ -320,7 +312,7 @@
         </div>
 
         <div class="flex items-center justify-between p-3 rounded-xl bg-slate-900/80 border border-slate-800">
-          <span class="font-bold text-sm text-slate-200">Abonnements & Éléments clefs (Cyan)</span>
+          <span class="font-bold text-sm text-slate-200">Abonnements & Éléments clefs</span>
           <input type="color" id="pickerAccent" onchange="updateTheme()" class="w-9 h-9 rounded cursor-pointer bg-transparent border-0">
         </div>
 
@@ -335,7 +327,6 @@
         </div>
       </div>
 
-      <!-- Image de fond sur-mesure -->
       <div class="mt-6 pt-4 border-t border-slate-800">
         <label class="block text-sm font-bold text-slate-200 mb-2">Image de Fond Personnalisée</label>
         <div class="flex items-center gap-2">
@@ -356,9 +347,8 @@
     </div>
   </div>
 
-  <!-- Footer Signature avec le mini robot -->
+  <!-- Footer -->
   <footer class="mt-12 text-center py-4 border-t border-slate-900 flex items-center justify-center gap-2">
-    <!-- Mini Robot SVG Badge -->
     <div class="w-6 h-6 rounded-lg bg-gradient-to-tr from-cyan-500 to-purple-600 flex items-center justify-center shadow-md shadow-cyan-500/20 border border-cyan-300/30">
       <i data-lucide="bot" class="w-3.5 h-3.5 text-black"></i>
     </div>
@@ -367,12 +357,13 @@
     </p>
   </footer>
 
+  <!-- SCRIPT LOGIQUE ET INTERACTION -->
   <script>
     const defaultTheme = {
       income: '#00ff9d',
       expense: '#ff0055',
-      accent: '#00f0ff', // Cyan Avatar
-      credit: '#b026ff', // Violet Avatar
+      accent: '#00f0ff',
+      credit: '#b026ff',
       bg: '#05070f',
       bgImage: null
     };
@@ -380,6 +371,32 @@
     let theme = { ...defaultTheme };
     let state = { transactions: [], recurringRules: [] };
     let currentDate = new Date();
+
+    function refreshIcons() {
+      if (typeof lucide !== 'undefined') {
+        lucide.createIcons();
+      }
+    }
+
+    function switchTab(tabName) {
+      const sectionTrans = document.getElementById('section-transactions');
+      const sectionSubs = document.getElementById('section-subscriptions');
+      const tabTrans = document.getElementById('tab-transactions');
+      const tabSubs = document.getElementById('tab-subscriptions');
+
+      if (tabName === 'transactions') {
+        sectionTrans.classList.remove('hidden');
+        sectionSubs.classList.add('hidden');
+        tabTrans.classList.add('active');
+        tabSubs.classList.remove('active');
+      } else {
+        sectionTrans.classList.add('hidden');
+        sectionSubs.classList.remove('hidden');
+        tabSubs.classList.add('active');
+        tabTrans.classList.remove('active');
+      }
+      refreshIcons();
+    }
 
     function loadTheme() {
       const savedTheme = localStorage.getItem('kiitchi_budget_theme');
@@ -459,5 +476,140 @@
       if (saved) {
         try { state = JSON.parse(saved); } catch (e) {}
       }
-      
-      document.getElementById('transDate').value = new Date().toISOString().slice(0, 10)
+      document.getElementById('transDate').value = new Date().toISOString().slice(0, 10);
+      render();
+    }
+
+    function saveData() {
+      localStorage.setItem('kiitchi_budget_data', JSON.stringify(state));
+      render();
+    }
+
+    function addTransaction(e) {
+      e.preventDefault();
+      const id = document.getElementById('editTransId').value || Date.now().toString();
+      const date = document.getElementById('transDate').value;
+      const label = document.getElementById('label').value;
+      const amount = parseFloat(document.getElementById('amount').value);
+      const type = document.getElementById('type').value;
+      const tag = document.getElementById('tag').value;
+      const isRecurring = document.getElementById('isRecurring').checked;
+
+      const newTrans = { id, date, label, amount, type, tag, isRecurring };
+
+      const existingIndex = state.transactions.findIndex(t => t.id === id);
+      if (existingIndex > -1) {
+        state.transactions[existingIndex] = newTrans;
+      } else {
+        state.transactions.push(newTrans);
+      }
+
+      document.getElementById('transForm').reset();
+      document.getElementById('editTransId').value = '';
+      document.getElementById('transDate').value = new Date().toISOString().slice(0, 10);
+      saveData();
+    }
+
+    function deleteTransaction(id) {
+      state.transactions = state.transactions.filter(t => t.id !== id);
+      saveData();
+    }
+
+    function changeMonth(offset) {
+      currentDate.setMonth(currentDate.getMonth() + offset);
+      render();
+    }
+
+    function render() {
+      const globalBalanceEl = document.getElementById('globalBalance');
+      const listEl = document.getElementById('transactionsList');
+      const monthLabelEl = document.getElementById('currentMonthLabel');
+      const monthIncomesEl = document.getElementById('monthIncomes');
+      const monthExpensesEl = document.getElementById('monthExpenses');
+
+      let globalBalance = 0;
+      let monthIncomes = 0;
+      let monthExpenses = 0;
+
+      const currentYear = currentDate.getFullYear();
+      const currentMonth = currentDate.getMonth();
+
+      monthLabelEl.textContent = currentDate.toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' });
+
+      listEl.innerHTML = '';
+
+      state.transactions.sort((a, b) => new Date(b.date) - new Date(a.date)).forEach(t => {
+        const tDate = new Date(t.date);
+        const val = t.type === 'income' ? t.amount : -t.amount;
+        globalBalance += val;
+
+        if (tDate.getFullYear() === currentYear && tDate.getMonth() === currentMonth) {
+          if (t.type === 'income') monthIncomes += t.amount;
+          else monthExpenses += t.amount;
+
+          const item = document.createElement('div');
+          item.className = 'flex items-center justify-between p-3.5 rounded-xl bg-slate-900/60 border border-slate-800 hover:border-cyan-500/30 transition';
+          item.innerHTML = `
+            <div class="flex items-center space-x-3">
+              <div class="p-2 rounded-lg ${t.type === 'income' ? 'bg-emerald-950/40 text-emerald-400' : 'bg-rose-950/40 text-rose-400'}">
+                <i data-lucide="${t.type === 'income' ? 'arrow-up-right' : 'arrow-down-left'}" class="w-4 h-4"></i>
+              </div>
+              <div>
+                <p class="font-bold text-sm text-slate-200">${t.label}</p>
+                <p class="text-[11px] text-slate-500 font-tech">${new Date(t.date).toLocaleDateString('fr-FR')}</p>
+              </div>
+            </div>
+            <div class="flex items-center space-x-3">
+              <span class="font-tech font-bold text-sm ${t.type === 'income' ? 'type-income' : 'type-expense'}">
+                ${t.type === 'income' ? '+' : '-'}${t.amount.toFixed(2)} €
+              </span>
+              <button onclick="deleteTransaction('${t.id}')" class="text-slate-600 hover:text-rose-400 transition">
+                <i data-lucide="trash-2" class="w-4 h-4"></i>
+              </button>
+            </div>
+          `;
+          listEl.appendChild(item);
+        }
+      });
+
+      globalBalanceEl.textContent = `${globalBalance.toFixed(2)} €`;
+      globalBalanceEl.className = `text-4xl sm:text-5xl font-extrabold font-tech ${globalBalance >= 0 ? 'type-income' : 'type-expense'}`;
+      monthIncomesEl.textContent = `+${monthIncomes.toFixed(2)} €`;
+      monthExpensesEl.textContent = `-${monthExpenses.toFixed(2)} €`;
+
+      refreshIcons();
+    }
+
+    function exportData() {
+      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(state));
+      const downloadAnchor = document.createElement('a');
+      downloadAnchor.setAttribute("href", dataStr);
+      downloadAnchor.setAttribute("download", `kiitchi_budget_backup_${new Date().toISOString().slice(0,10)}.json`);
+      document.body.appendChild(downloadAnchor);
+      downloadAnchor.click();
+      downloadAnchor.remove();
+    }
+
+    function importData(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        try {
+          state = JSON.parse(e.target.result);
+          saveData();
+        } catch (err) {
+          alert("Fichier JSON invalide.");
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      loadTheme();
+      loadData();
+      refreshIcons();
+    });
+  </script>
+</body>
+</html>
