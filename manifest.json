@@ -1,9 +1,13 @@
 {
-  "name": "Budget",
-  "short_name": "Budget",
-  "start_url": "./index.html",
-  "display": "standalone",
   "background_color": "#05070f",
+  "dir": "ltr",
+  "display": "standalone",
+  "name": "Budget",
+  "orientation": "any",
+  "scope": "/",
+  "short_name": "Budget",
+  "start_url": "/",
   "theme_color": "#00f0ff",
-  "icons": []
+  "id": "/",
+  "description": "Application de gestion de budget personnelle."
 }
