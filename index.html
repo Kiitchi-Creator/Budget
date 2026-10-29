@@ -119,16 +119,21 @@
         </div>
       </div>
 
-      <!-- Actions : Palette + Export/Import avec émojis garantis sans bug de chargement -->
-      <div class="flex items-center space-x-2">
-        <button onclick="toggleThemeModal(true)" title="Personnaliser les couleurs & fond" class="w-9 h-9 flex items-center justify-center rounded-lg border border-slate-700 bg-slate-900 text-slate-300 hover:text-cyan-400 hover:border-cyan-400 transition text-base">
-          🎨
+<!-- Actions : Commandes HUD (Palette, Export, Import) -->
+      <div class="flex items-center space-x-2 font-tech">
+        <!-- Bouton Palette / Thème -->
+        <button onclick="toggleThemeModal(true)" title="Personnaliser les couleurs & fond" class="w-10 h-10 flex items-center justify-center rounded-xl border border-cyan-500/40 bg-slate-900/90 text-cyan-400 hover:bg-cyan-500/20 hover:border-cyan-400 hover:shadow-[0_0_12px_rgba(0,240,255,0.4)] transition">
+          <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a10 10 0 0 1 7.54 16.54c-.37.4-.92.6-1.46.6h-1.08a2 2 0 0 0-2 2v.08a2 2 0 0 1-2 2h-.46a10 10 0 1 1-6.54-21.16z"/><circle cx="7.5" cy="10.5" r="1.5"/><circle cx="12" cy="7.5" r="1.5"/><circle cx="16.5" cy="10.5" r="1.5"/></svg>
         </button>
-        <button onclick="exportData()" title="Exporter les données" class="w-9 h-9 flex items-center justify-center rounded-lg border border-cyan-500/30 bg-cyan-950/30 text-cyan-400 hover:bg-cyan-500/20 transition text-base">
-          💾
+
+        <!-- Bouton Export Données -->
+        <button onclick="exportData()" title="Exporter les données" class="w-10 h-10 flex items-center justify-center rounded-xl border border-teal-500/40 bg-slate-900/90 text-teal-400 hover:bg-teal-500/20 hover:border-teal-400 hover:shadow-[0_0_12px_rgba(45,212,191,0.4)] transition">
+          <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
         </button>
-        <label title="Importer les données" class="w-9 h-9 flex items-center justify-center rounded-lg border border-purple-500/30 bg-purple-950/30 text-purple-400 hover:bg-purple-500/20 transition cursor-pointer text-base">
-          📂
+
+        <!-- Bouton Import Données -->
+        <label title="Importer les données" class="w-10 h-10 flex items-center justify-center rounded-xl border border-purple-500/40 bg-slate-900/90 text-purple-400 hover:bg-purple-500/20 hover:border-purple-400 hover:shadow-[0_0_12px_rgba(176,38,255,0.4)] transition cursor-pointer">
+          <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
           <input type="file" id="importFile" onchange="importData(event)" class="hidden" accept=".json">
         </label>
       </div>
