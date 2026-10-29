@@ -142,7 +142,7 @@
         <div>
           <p class="text-xs font-tech uppercase tracking-widest mb-1 flex items-center gap-1.5 opacity-90 text-slate-300">
             <i data-lucide="shield-check" class="w-4 h-4 text-cyan-400"></i>
-            Solde Général
+            Solde Général (Réel à ce jour)
           </p>
           <p id="globalBalance" class="text-4xl sm:text-5xl font-extrabold font-tech type-income">0.00 €</p>
         </div>
@@ -194,7 +194,7 @@
 
           <div>
             <label class="block text-xs font-tech text-slate-400 mb-1">Type d'opération</label>
-            <select id="type" onchange="updateTagOptions()" class="w-full bg-slate-950/80 border border-slate-700 rounded-xl px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-cyan-400 transition">
+            <select id="type" class="w-full bg-slate-950/80 border border-slate-700 rounded-xl px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-cyan-400 transition">
               <option value="expense">Sortie (Dépense)</option>
               <option value="income">Entrée (Revenu)</option>
             </select>
@@ -369,7 +369,7 @@
     };
 
     let theme = { ...defaultTheme };
-    let state = { transactions: [], recurringRules: [] };
+    let state = { transactions: [] };
     let currentDate = new Date();
 
     function refreshIcons() {
@@ -526,23 +526,38 @@
       const monthLabelEl = document.getElementById('currentMonthLabel');
       const monthIncomesEl = document.getElementById('monthIncomes');
       const monthExpensesEl = document.getElementById('monthExpenses');
+      
+      const recurringListEl = document.getElementById('recurringList');
+      const totalSubsMonthlyEl = document.getElementById('totalSubsMonthly');
+      const totalCreditsMonthlyEl = document.getElementById('totalCreditsMonthly');
 
       let globalBalance = 0;
       let monthIncomes = 0;
       let monthExpenses = 0;
+      let totalSubs = 0;
+      let totalCredits = 0;
 
       const currentYear = currentDate.getFullYear();
       const currentMonth = currentDate.getMonth();
 
+      // Date du jour au format YYYY-MM-DD (pour comparer et ne pas impacter le solde général avec des dates futures)
+      const todayStr = new Date().toISOString().slice(0, 10);
+
       monthLabelEl.textContent = currentDate.toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' });
 
       listEl.innerHTML = '';
+      recurringListEl.innerHTML = '';
 
       state.transactions.sort((a, b) => new Date(b.date) - new Date(a.date)).forEach(t => {
-        const tDate = new Date(t.date);
         const val = t.type === 'income' ? t.amount : -t.amount;
-        globalBalance += val;
 
+        // Le solde général ne prend en compte que les opérations passées ou d'aujourd'hui
+        if (t.date <= todayStr) {
+          globalBalance += val;
+        }
+
+        // Statistiques du mois affiché dans l'onglet transactions
+        const tDate = new Date(t.date);
         if (tDate.getFullYear() === currentYear && tDate.getMonth() === currentMonth) {
           if (t.type === 'income') monthIncomes += t.amount;
           else monthExpenses += t.amount;
@@ -570,12 +585,46 @@
           `;
           listEl.appendChild(item);
         }
+
+        // Gestion des Charges Fixes (Abonnements & Crédits)
+        if (t.tag === 'sub' || t.tag === 'install' || t.isRecurring) {
+          if (t.tag === 'sub') totalSubs += t.amount;
+          if (t.tag === 'install') totalCredits += t.amount;
+
+          const subItem = document.createElement('div');
+          subItem.className = 'flex items-center justify-between p-3.5 rounded-xl bg-slate-900/60 border border-slate-800 hover:border-cyan-500/30 transition';
+          subItem.innerHTML = `
+            <div class="flex items-center space-x-3">
+              <div class="p-2 rounded-lg ${t.tag === 'install' ? 'bg-purple-950/40 text-purple-400' : 'bg-cyan-950/40 text-cyan-400'}">
+                <i data-lucide="${t.tag === 'install' ? 'credit-card' : 'repeat'}" class="w-4 h-4"></i>
+              </div>
+              <div>
+                <p class="font-bold text-sm text-slate-200">${t.label}</p>
+                <p class="text-[11px] text-slate-500 font-tech">Date de référence : ${new Date(t.date).toLocaleDateString('fr-FR')}</p>
+              </div>
+            </div>
+            <div class="flex items-center space-x-3">
+              <span class="font-tech font-bold text-sm ${t.tag === 'install' ? 'text-credit' : 'text-accent'}">
+                ${t.amount.toFixed(2)} €
+              </span>
+              <button onclick="deleteTransaction('${t.id}')" class="text-slate-600 hover:text-rose-400 transition">
+                <i data-lucide="trash-2" class="w-4 h-4"></i>
+              </button>
+            </div>
+          `;
+          recurringListEl.appendChild(subItem);
+        }
       });
 
+      // Affichage des totaux généraux et fixes
       globalBalanceEl.textContent = `${globalBalance.toFixed(2)} €`;
       globalBalanceEl.className = `text-4xl sm:text-5xl font-extrabold font-tech ${globalBalance >= 0 ? 'type-income' : 'type-expense'}`;
+      
       monthIncomesEl.textContent = `+${monthIncomes.toFixed(2)} €`;
       monthExpensesEl.textContent = `-${monthExpenses.toFixed(2)} €`;
+
+      totalSubsMonthlyEl.textContent = `${totalSubs.toFixed(2)} €`;
+      totalCreditsMonthlyEl.textContent = `${totalCredits.toFixed(2)} €`;
 
       refreshIcons();
     }
